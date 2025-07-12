@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Riwayat Reservasi</title>
+    <style>
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f1419;
+            color: #e4e6ea;
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 20px 15px;
+            position: fixed;
+            top: 0; left: 0;
+        }
+        .sidebar h2 {
+            text-align: center; color: #64b5f6; margin-bottom: 30px;
+        }
+        .sidebar a {
+            display: block;
+            padding: 15px 20px;
+            color: #e4e6ea;
+            text-decoration: none;
+            margin-bottom: 8px;
+            border-left: 3px solid transparent;
+        }
+        .sidebar a:hover {
+            background: #2d3748;
+            border-left-color: #64b5f6;
+        }
+        .sidebar a.active {
+            background: #2b6cb0;
+            border-left-color: #90cdf4;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 30px;
+            width: 100%;
+        }
+        .container {
+            max-width: 1200px; margin: 0 auto;
+        }
+        h1 {
+            font-size: 32px;
+            border-bottom: 3px solid #64b5f6;
+            margin-bottom: 20px;
+        }
+        form[method="GET"] {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: none;
+            width: 250px;
+            font-size: 14px;
+        }
+        button[type="submit"] {
+            padding: 8px 12px;
+            border: none;
+            background: #3182ce;
+            color: white;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .alert {
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        .alert-success {
+            background: #065f46; color: #a7f3d0; border-left-color: #10b981;
+        }
+        .alert-error {
+            background: #991b1b; color: #fca5a5; border-left-color: #ef4444;
+        }
+        .alert-warning {
+            background: #b45309; color: #fde68a; border-left-color: #f59e0b;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin-top: 20px;
+            background: #1a202c; border-radius: 12px; overflow: hidden;
+        }
+        th {
+            background: #2b6cb0; color: white;
+            padding: 16px; text-align: left;
+        }
+        td {
+            padding: 14px; border-bottom: 1px solid #374151;
+        }
+        tr:hover {
+            background: #2d3748;
+        }
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-pending {
+            background: #b45309; color: #fde68a;
+        }
+        .status-approved {
+            background: #047857; color: #a7f3d0;
+        }
+        .status-rejected {
+            background: #991b1b; color: #fca5a5;
+        }
+        .btn-action {
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 6px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            margin-right: 5px;
+            margin-top: 5px;
+        }
+        .btn-approve {
+            background: #16a34a;
+        }
+        .btn-reject {
+            background: #dc2626;
+        }
+        .btn-delete {
+            background: #7f1d1d;
+        }
+        .no-data {
+            padding: 60px 20px; text-align: center; color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <a href="/admin" class="active">Daftar Reservasi</a>
+        <a href="/admin/users">Daftar Users</a>
+        <a href="/admin/tables">Daftar meja</a>
+        <a href="/logout">Logout</a>
+    </div>
+
+    <div class="content">
+        <div class="container">
+            <h1>Riwayat Reservasi</h1>
+
+            <form method="GET" action="/admin">
+                <input type="text" name="q" placeholder="Cari nama user..." value="{{ request.args.get('q', '') }}">
+                <button type="submit">🔍 Cari</button>
+            </form>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, msg in messages %}
+                        <div class="alert alert-{{ category }}">{{ msg }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% if reservations %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Meja</th>
+                            <th>Tanggal</th>
+                            <th>Waktu</th>
+                            <th>Tamu</th>
+                            <th>Catatan</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for res in reservations %}
+                        <tr>
+                            <td>{{ res.user_name }}</td>
+                            <td>{{ res.table_id }}</td>
+                            <td>{{ res.date }}</td>
+                            <td>{{ res.time }}</td>
+                            <td>{{ res.guests }}</td>
+                            <td>{{ res.notes or '-' }}</td>
+                            <td>
+                                <span class="status-badge status-{{ res.status.lower() }}">
+                                    {{ res.status.capitalize() }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if res.status.lower() == 'pending' %}
+                                    <form method="POST" action="/admin/reservasi/{{ res._id }}/approve" style="display:inline;">
+                                        <button class="btn-action btn-approve" type="submit">✔️ Approve</button>
+                                    </form>
+                                    <form method="POST" action="/admin/reservasi/{{ res._id }}/reject" style="display:inline;">
+                                        <button class="btn-action btn-reject" type="submit">❌ Reject</button>
+                                    </form>
+                                {% else %}
+                                    <form method="POST" action="/reservasi/delete/{{ res._id }}" onsubmit="return confirm('Yakin ingin menghapus reservasi ini?');">
+                                        <button class="btn-action btn-delete" type="submit">🗑 Hapus</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="no-data">
+                    Tidak ada reservasi ditemukan.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

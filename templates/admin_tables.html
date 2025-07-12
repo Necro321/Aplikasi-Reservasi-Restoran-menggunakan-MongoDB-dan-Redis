@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Daftar Meja</title>
+    <style>
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f1419;
+            color: #e4e6ea;
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 20px 15px;
+            position: fixed;
+            top: 0; left: 0;
+        }
+        .sidebar h2 {
+            text-align: center; color: #64b5f6; margin-bottom: 30px;
+        }
+        .sidebar a {
+            display: block;
+            padding: 15px 20px;
+            color: #e4e6ea;
+            text-decoration: none;
+            margin-bottom: 8px;
+            border-left: 3px solid transparent;
+        }
+        .sidebar a:hover {
+            background: #2d3748;
+            border-left-color: #64b5f6;
+        }
+        .sidebar a.active {
+            background: #2b6cb0;
+            border-left-color: #90cdf4;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 30px;
+            width: 100%;
+        }
+        .container {
+            max-width: 1200px; margin: 0 auto;
+        }
+        h1 {
+            font-size: 32px;
+            border-bottom: 3px solid #64b5f6;
+            margin-bottom: 20px;
+        }
+        .alert {
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        .alert-success {
+            background: #065f46; color: #a7f3d0; border-left-color: #10b981;
+        }
+        .alert-error {
+            background: #991b1b; color: #fca5a5; border-left-color: #ef4444;
+        }
+        .alert-warning {
+            background: #b45309; color: #fde68a; border-left-color: #f59e0b;
+        }
+        
+        /* Popular Tables Section */
+        .popular-tables {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        .popular-tables h2 {
+            color: #ffffff;
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .popular-tables h2::before {
+            content: "🏆";
+            font-size: 28px;
+        }
+        .popular-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            list-style: none;
+        }
+        .popular-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px 20px;
+            border-left: 4px solid #fbbf24;
+            transition: all 0.3s ease;
+        }
+        .popular-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        .popular-item .table-id {
+            color: #fbbf24;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .popular-item .usage-count {
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .popular-item .usage-text {
+            color: #e5e7eb;
+            margin-left: 5px;
+        }
+        .rank-badge {
+            background: #fbbf24;
+            color: #1f2937;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        table {
+            width: 100%; border-collapse: collapse; margin-top: 20px;
+            background: #1a202c; border-radius: 12px; overflow: hidden;
+        }
+        th {
+            background: #2b6cb0; color: white;
+            padding: 16px; text-align: left;
+        }
+        td {
+            padding: 14px; border-bottom: 1px solid #374151;
+        }
+        tr:hover {
+            background: #2d3748;
+        }
+        .btn-action {
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 6px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            margin-right: 5px;
+            margin-top: 5px;
+        }
+        .btn-available {
+            background: #16a34a;
+        }
+        .btn-disable {
+            background: #6b7280;
+            cursor: default;
+        }
+        .highlight {
+            color: #90cdf4;
+            font-weight: bold;
+        }
+        .tables-section h2 {
+            color: #64b5f6;
+            font-size: 24px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .tables-section h2::before {
+            content: "🪑";
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <a href="/admin">Daftar Reservasi</a>
+        <a href="/admin/users">Daftar Users</a>
+        <a href="/admin/tables" class="active">Daftar Meja</a>
+        <a href="/logout">Logout</a>
+    </div>
+
+    <div class="content">
+        <div class="container">
+            <h1>Daftar Meja</h1>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, msg in messages %}
+                        <div class="alert alert-{{ category }}">{{ msg }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Popular Tables Section -->
+            <div class="popular-tables">
+                <h2>Meja Paling Sering Digunakan</h2>
+                <ul class="popular-list">
+                    {% for item in popular_tables %}
+                        <li class="popular-item">
+                            <span class="rank-badge">#{{ loop.index }}</span>
+                            <span class="table-id">Meja {{ item._id }}</span>
+                            <span class="usage-count">{{ item.jumlah_reservasi }}</span>
+                            <span class="usage-text">kali digunakan</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+
+            <!-- Tables List Section -->
+            <div class="tables-section">
+                <h2>Semua Meja</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Meja</th>
+                            <th>Kapasitas</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for table in tables %}
+                        <tr>
+                            <td>{{ table.table_id }}</td>
+                            <td>{{ table.capacity }}</td>
+                            <td>{{ table.status }}</td>
+                            <td>
+                                {% if table.status == 'booked' %}
+                                    <form method="POST" action="/admin/table/{{ table.table_id }}/set_available" style="display:inline;">
+                                        <button class="btn-action btn-available" type="submit">Set Available</button>
+                                    </form>
+                                {% else %}
+                                    <button class="btn-action btn-disable" disabled>Tersedia</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

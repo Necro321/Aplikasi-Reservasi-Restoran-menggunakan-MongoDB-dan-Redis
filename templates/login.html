@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #28145b, #331e2c);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            display: flex;
+            width: 800px;
+            height: 500px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .left-side {
+            width: 50%;
+            background-image: url("{{ url_for('static', filename='restoran.jpg') }}");
+
+            background-size: cover;
+            background-position: center;
+        }
+
+        .right-side {
+            width: 50%;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .alert {
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            border-left: 4px solid;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert.success {
+            background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            color: #a7f3d0;
+            border-left-color: #10b981;
+        }
+
+        .alert.error {
+            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+            color: #fca5a5;
+            border-left-color: #ef4444;
+        }
+
+        .right-side h1 {
+            font-family: cursive;
+            margin: 0;
+            font-size: 30px;
+            color: #3b2b3d;
+        }
+
+        .right-side h2 {
+            margin: 10px 0 30px;
+            font-size: 20px;
+            color: #000;
+        }
+
+        input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .forgot-password {
+            text-align: right;
+            font-size: 12px;
+            margin-top: -8px;
+            margin-bottom: 20px;
+        }
+
+        .forgot-password a {
+            text-decoration: none;
+            color: #7c317d;
+        }
+
+        button {
+            background-color: #4b144f;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #641e67;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <div class="left-side"></div>
+    <div class="right-side">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, msg in messages %}
+                    <div class="alert {{ category }}">{{ msg }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <h1>Gemini</h1>
+        <h2>Employee login</h2>
+        <form method="POST">
+            <input type="email" name="email" placeholder="Employee number or email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <div class="forgot-password">
+                <a href="/register">Sign Up</a>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
